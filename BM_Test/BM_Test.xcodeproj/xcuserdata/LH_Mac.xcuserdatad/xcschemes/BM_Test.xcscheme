@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0700"
+   LastUpgradeVersion = "0710"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "95E7DC661BC8EE56000E0297"
-               BuildableName = "Opencv tutorial"
-               BlueprintName = "Opencv tutorial"
-               ReferencedContainer = "container:Opencv tutorial.xcodeproj">
+               BlueprintIdentifier = "953E0A0F1BDCC21A0067CC3C"
+               BuildableName = "BM_Test"
+               BlueprintName = "BM_Test"
+               ReferencedContainer = "container:BM_Test.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,10 +32,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "95E7DC661BC8EE56000E0297"
-            BuildableName = "Opencv tutorial"
-            BlueprintName = "Opencv tutorial"
-            ReferencedContainer = "container:Opencv tutorial.xcodeproj">
+            BlueprintIdentifier = "953E0A0F1BDCC21A0067CC3C"
+            BuildableName = "BM_Test"
+            BlueprintName = "BM_Test"
+            ReferencedContainer = "container:BM_Test.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -55,10 +55,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "95E7DC661BC8EE56000E0297"
-            BuildableName = "Opencv tutorial"
-            BlueprintName = "Opencv tutorial"
-            ReferencedContainer = "container:Opencv tutorial.xcodeproj">
+            BlueprintIdentifier = "953E0A0F1BDCC21A0067CC3C"
+            BuildableName = "BM_Test"
+            BlueprintName = "BM_Test"
+            ReferencedContainer = "container:BM_Test.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -74,10 +74,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "95E7DC661BC8EE56000E0297"
-            BuildableName = "Opencv tutorial"
-            BlueprintName = "Opencv tutorial"
-            ReferencedContainer = "container:Opencv tutorial.xcodeproj">
+            BlueprintIdentifier = "953E0A0F1BDCC21A0067CC3C"
+            BuildableName = "BM_Test"
+            BlueprintName = "BM_Test"
+            ReferencedContainer = "container:BM_Test.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
