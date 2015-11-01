@@ -23,11 +23,12 @@ static void print_help()
     printf("\nUsage: stereo_match <left_image> <right_image> [--algorithm=bm|sgbm|hh|sgbm3way] [--blocksize=<block_size>]\n"
            "[--max-disparity=<max_disparity>] [--scale=scale_factor>] [-i <intrinsic_filename>] [-e <extrinsic_filename>]\n"
            "[--no-display] [-o <disparity_image>] [-p <point_cloud_file>]\n");
+    printf("\nUserguide: In terminal, cd to /Users/LH_Mac/Desktop/BMW_FMRL_Image_Depth/OpenCV TR/Opencv tutorial/build/Debug, type ./Opencv\ tutorial LEFT_IMAGE_PATH RIGHT_IMAGE_PATH --algorithm=sgbm");
 }
 
 
 
-// save image as an matrix. fabs means compute absolute value
+// save image from command line   as an matrix. fabs means compute absolute value
 static void saveXYZ(const char* filename, const Mat& mat)
 {
     const double max_z = 1.0e4;
@@ -46,14 +47,35 @@ static void saveXYZ(const char* filename, const Mat& mat)
 
 
 
+
+
+
+
+
+
+
+
+
+//select option in command line
+
+//argv and argc are how command line arguments are passed to main() in C and C++.
+
+//argc will be the number of strings pointed to by argv. This will (in practice) be 1 plus the number of arguments, as virtually all implementations will prepend the name of the program to the array.
+
+//The variables are named argc (argument count) and argv (argument vector) by convention, but they can be given any valid identifier: int main(int num_args, char** arg_strings) is equally valid.
+
+//They can also be omitted entirely, yielding int main(), if you do not intend to process command line arguments.
+
 int main(int argc, char** argv)
 {
+    //these are the options, they don't have to be in the command window
     const char* algorithm_opt = "--algorithm=";
     const char* maxdisp_opt = "--max-disparity=";
     const char* blocksize_opt = "--blocksize=";
     const char* nodisplay_opt = "--no-display";
     const char* scale_opt = "--scale=";
     
+    //if the input is less than 3 items (executable name, left image, right image),print_help. This will usually happen when directly click the executable
     if(argc < 3)
     {
         print_help();
@@ -66,17 +88,35 @@ int main(int argc, char** argv)
     const char* disparity_filename = 0;
     const char* point_cloud_filename = 0;
     
+    //I think this one is to assign the values to different algorithms and set default algorithm as SGBM
     enum { STEREO_BM=0, STEREO_SGBM=1, STEREO_HH=2, STEREO_VAR=3, STEREO_3WAY=4 };
     int alg = STEREO_SGBM;
     int SADWindowSize = 0, numberOfDisparities = 0;
     bool no_display = false;
     float scale = 1.f;
     
+    //static Ptr<> load (const String &filename, const String &objname=String()), Loads algorithm from the file.
+    
+    //static Ptr<StereoBM> cv::StereoBM::create	(	int 	numDisparities = 0,
+    //                                              int 	blockSize = 21      )
+    //Class for computing stereo correspondence using the block matching algorithm, introduced and contributed to OpenCV by K. Konolige.
+    //
+    //Creates StereoBM object.
+    
+    //Parameters
+    //numDisparities:  disparity search range. For each pixel algorithm will find the best disparity from 0 (default minimum disparity) to numDisparities. The search range can then be shifted by changing the minimum disparity.
+    //blockSize:  the linear size of the blocks compared by the algorithm. The size should be odd (as the block is centered at the current pixel). Larger block size implies smoother, though less accurate disparity map. Smaller block size gives more detailed disparity map, but there is higher chance for algorithm to find a wrong correspondence.
+    //
+    //The function create StereoBM object. You can then call StereoBM::compute() to compute disparity for a specific stereo pair.
+    
     Ptr<StereoBM> bm = StereoBM::create(16,9);
     Ptr<StereoSGBM> sgbm = StereoSGBM::create(0,16,3);
     
     for( int i = 1; i < argc; i++ )
     {
+        //since strings are characters, argv[i][0] means the first characater ("0") in the "i+1"th string
+        //So this means if the first character of command line argument is not equal to "-" (which is the start of the selection), the program will run the if-else function
+        //For integral types, ! returns true if the operand is zero, and false otherwise. For !img1_filename here just means img1_filename = 0. Means if it's not exist before, it will be assigned to argv[i]. Note that i starts from 1, so i=0 which is the executable name will not be examined.
         if( argv[i][0] != '-' )
         {
             if( !img1_filename )
@@ -84,15 +124,15 @@ int main(int argc, char** argv)
             else
                 img2_filename = argv[i];
         }
+        
+        //strcmp means compare two strings(probably to see if they are equal). strlen returns the length of the given byte string, that is, the number of characters in a character array whose first element is pointed to by str up to and not including the first null character.
+        //this one test the similarity between input parameter and exist algorithms
         else if( strncmp(argv[i], algorithm_opt, strlen(algorithm_opt)) == 0 )
         {
             char* _alg = argv[i] + strlen(algorithm_opt);
             alg = strcmp(_alg, "bm") == 0 ? STEREO_BM :
             strcmp(_alg, "sgbm") == 0 ? STEREO_SGBM :
             strcmp(_alg, "hh") == 0 ? STEREO_HH :
-            
-            
-            
             strcmp(_alg, "var") == 0 ? STEREO_VAR :
             strcmp(_alg, "sgbm3way") == 0 ? STEREO_3WAY : -1;
             if( alg < 0 )
@@ -102,6 +142,10 @@ int main(int argc, char** argv)
                 return -1;
             }
         }
+        
+        
+        
+        //for maximun disparity option
         else if( strncmp(argv[i], maxdisp_opt, strlen(maxdisp_opt)) == 0 )
         {
             if( sscanf( argv[i] + strlen(maxdisp_opt), "%d", &numberOfDisparities ) != 1 ||
@@ -112,6 +156,10 @@ int main(int argc, char** argv)
                 return -1;
             }
         }
+        
+        
+        
+        //for block size option
         else if( strncmp(argv[i], blocksize_opt, strlen(blocksize_opt)) == 0 )
         {
             if( sscanf( argv[i] + strlen(blocksize_opt), "%d", &SADWindowSize ) != 1 ||
@@ -129,6 +177,8 @@ int main(int argc, char** argv)
                 return -1;
             }
         }
+        
+        //for other options
         else if( strcmp(argv[i], nodisplay_opt) == 0 )
             no_display = true;
         else if( strcmp(argv[i], "-i" ) == 0 )
@@ -146,11 +196,14 @@ int main(int argc, char** argv)
         }
     }
     
+    
+    //test input options (if we miss a input)
     if( !img1_filename || !img2_filename )
     {
         printf("Command-line parameter error: both left and right images must be specified\n");
         return -1;
     }
+    
     
     if( (intrinsic_filename != 0) ^ (extrinsic_filename != 0) )
     {
@@ -168,6 +221,8 @@ int main(int argc, char** argv)
     Mat img1 = imread(img1_filename, color_mode);
     Mat img2 = imread(img2_filename, color_mode);
     
+    
+    //test the whether the string is empty
     if (img1.empty())
     {
         printf("Command-line parameter error: could not load the first input image file\n");
@@ -179,6 +234,8 @@ int main(int argc, char** argv)
         return -1;
     }
     
+    
+    //input scale factor
     if (scale != 1.f)
     {
         Mat temp1, temp2;
@@ -238,8 +295,12 @@ int main(int argc, char** argv)
         img2 = img2r;
     }
     
+    
+    //this one should be calculate the number of disparities
     numberOfDisparities = numberOfDisparities > 0 ? numberOfDisparities : ((img_size.width/8) + 15) & -16;
     
+    
+    //setting the block matching and semi-global bm algorithm parameters
     bm->setROI1(roi1);
     bm->setROI2(roi2);
     bm->setPreFilterCap(63);
@@ -270,13 +331,18 @@ int main(int argc, char** argv)
         sgbm->setMode(StereoSGBM::MODE_HH);
     else if(alg==STEREO_SGBM)
         sgbm->setMode(StereoSGBM::MODE_SGBM);
-
+    
     
     Mat disp, disp8;
     //Mat img1p, img2p, dispp;
     //copyMakeBorder(img1, img1p, 0, 0, numberOfDisparities, 0, IPL_BORDER_REPLICATE);
     //copyMakeBorder(img2, img2p, 0, 0, numberOfDisparities, 0, IPL_BORDER_REPLICATE);
     
+    
+    
+    //function below calculates the disparity map from 2 images and assigned parameters. Actually there are 4 algorithms. When choosing SGBM, inside the function it will direct to HH or SGBM3WAY
+    //&& means "and", || means "or"
+    //gettickcount calculate the processing time
     int64 t = getTickCount();
     if( alg == STEREO_BM )
         bm->compute(img1, img2, disp);
@@ -285,7 +351,18 @@ int main(int argc, char** argv)
     t = getTickCount() - t;
     printf("Time elapsed: %fms\n", t*1000/getTickFrequency());
     
+    
+    
+    
+    
     //disp = dispp.colRange(numberOfDisparities, img1p.cols);
+    
+    //following code first assign a greyscale value to different disparity level
+    //then show the disparity map as well as the input pictures
+    
+    //Flush stream
+    //If the given stream was open for writing (or if it was open for updating and the last i/o operation was an output operation) any unwritten data in its output buffer is written to the file.
+    
     if( alg != STEREO_VAR )
         disp.convertTo(disp8, CV_8U, 255/(numberOfDisparities*16.));
     else
@@ -304,6 +381,7 @@ int main(int argc, char** argv)
         printf("\n");
     }
     
+    //write the disparity matrix into a file
     if(disparity_filename)
         imwrite(disparity_filename, disp8);
     
