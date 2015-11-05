@@ -1,5 +1,5 @@
 dependencies: \
-  /Users/LH_Mac/Desktop/BMW_FMRL_Image_Depth/OpenCV\ TR/Opencv\ tutorial/BM_Test/BM_Test/main.cpp \
+  /Users/LH_Mac/Documents/StereoMatching/BM_Test/BM_Test/main.cpp \
   /usr/local/include/opencv2/calib3d.hpp \
   /usr/local/include/opencv2/core.hpp \
   /usr/local/include/opencv2/core/cvdef.h \

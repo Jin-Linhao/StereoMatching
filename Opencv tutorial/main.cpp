@@ -16,6 +16,10 @@
 #include <stdio.h>
 
 using namespace cv;
+using namespace std;
+
+
+
 
 static void print_help()
 {
@@ -49,7 +53,24 @@ static void saveXYZ(const char* filename, const Mat& mat)
 
 
 
-
+int BlockSize = 5;
+int temp11;
+int number_of_disparities = 80;
+int temp2;
+int pre_filter_size = 5;
+int temp3;
+int pre_filter_cap = 23;
+int temp4;
+int min_disparity = 1;
+int temp5;
+int texture_threshold = 500;
+int temp6;
+int uniqueness_ratio = 0;
+int temp7;
+int max_diff = 100;
+float temp8;
+int speckle_window_size = -10;
+int temp9;
 
 
 
@@ -68,6 +89,12 @@ static void saveXYZ(const char* filename, const Mat& mat)
 
 int main(int argc, char** argv)
 {
+    
+    
+    
+    
+    
+    
     //these are the options, they don't have to be in the command window
     const char* algorithm_opt = "--algorithm=";
     const char* maxdisp_opt = "--max-disparity=";
@@ -91,7 +118,7 @@ int main(int argc, char** argv)
     //I think this one is to assign the values to different algorithms and set default algorithm as SGBM
     enum { STEREO_BM=0, STEREO_SGBM=1, STEREO_HH=2, STEREO_VAR=3, STEREO_3WAY=4 };
     int alg = STEREO_SGBM;
-    int SADWindowSize = 0, numberOfDisparities = 0;
+    //int SADWindowSize = 0, numberOfDisparities = 0;
     bool no_display = false;
     float scale = 1.f;
     
@@ -109,7 +136,7 @@ int main(int argc, char** argv)
     //
     //The function create StereoBM object. You can then call StereoBM::compute() to compute disparity for a specific stereo pair.
     
-    Ptr<StereoBM> bm = StereoBM::create(16,9);
+    Ptr<StereoBM> bm = StereoBM::create();
     Ptr<StereoSGBM> sgbm = StereoSGBM::create(0,16,3);
     
     for( int i = 1; i < argc; i++ )
@@ -146,29 +173,29 @@ int main(int argc, char** argv)
         
         
         //for maximun disparity option
-        else if( strncmp(argv[i], maxdisp_opt, strlen(maxdisp_opt)) == 0 )
-        {
-            if( sscanf( argv[i] + strlen(maxdisp_opt), "%d", &numberOfDisparities ) != 1 ||
-               numberOfDisparities < 1 || numberOfDisparities % 16 != 0 )
-            {
-                printf("Command-line parameter error: The max disparity (--maxdisparity=<...>) must be a positive integer divisible by 16\n");
-                print_help();
-                return -1;
-            }
-        }
+        //        else if( strncmp(argv[i], maxdisp_opt, strlen(maxdisp_opt)) == 0 )
+        //        {
+        //            if( sscanf( argv[i] + strlen(maxdisp_opt), "%d", &numberOfDisparities ) != 1 ||
+        //               numberOfDisparities < 1 || numberOfDisparities % 16 != 0 )
+        //            {
+        //                printf("Command-line parameter error: The max disparity (--maxdisparity=<...>) must be a positive integer divisible by 16\n");
+        //                print_help();
+        //                return -1;
+        //            }
+        //        }
         
         
         
         //for block size option
-        else if( strncmp(argv[i], blocksize_opt, strlen(blocksize_opt)) == 0 )
-        {
-            if( sscanf( argv[i] + strlen(blocksize_opt), "%d", &SADWindowSize ) != 1 ||
-               SADWindowSize < 1 || SADWindowSize % 2 != 1 )
-            {
-                printf("Command-line parameter error: The block size (--blocksize=<...>) must be a positive odd number\n");
-                return -1;
-            }
-        }
+        //        else if( strncmp(argv[i], blocksize_opt, strlen(blocksize_opt)) == 0 )
+        //        {
+        //            if( sscanf( argv[i] + strlen(blocksize_opt), "%d", &SADWindowSize ) != 1 ||
+        //               SADWindowSize < 1 || SADWindowSize % 2 != 1 )
+        //            {
+        //                printf("Command-line parameter error: The block size (--blocksize=<...>) must be a positive odd number\n");
+        //                return -1;
+        //            }
+        //        }
         else if( strncmp(argv[i], scale_opt, strlen(scale_opt)) == 0 )
         {
             if( sscanf( argv[i] + strlen(scale_opt), "%f", &scale ) != 1 || scale < 0 )
@@ -220,6 +247,17 @@ int main(int argc, char** argv)
     int color_mode = alg == STEREO_BM ? 0 : -1;
     Mat img1 = imread(img1_filename, color_mode);
     Mat img2 = imread(img2_filename, color_mode);
+    namedWindow("disp", 20);
+    createTrackbar("WindowSize", "disp", & BlockSize, 50, NULL);
+    createTrackbar("no_of_disparities", "disp", &number_of_disparities,255, NULL);
+    createTrackbar("filter_size", "disp", &pre_filter_size,255, NULL);
+    createTrackbar("filter_cap", "disp", &pre_filter_cap,63, NULL);
+    createTrackbar("min_disparity", "disp", &min_disparity,60, NULL);
+    createTrackbar("texture_thresh", "disp", &texture_threshold,2000, NULL);
+    createTrackbar("uniquness", "disp", &uniqueness_ratio,30, NULL);
+    createTrackbar("disp12MaxDiff", "disp", &max_diff,100, NULL);
+    createTrackbar("Speckle Window", "disp", &speckle_window_size,50, NULL);
+    
     
     
     //test the whether the string is empty
@@ -297,103 +335,208 @@ int main(int argc, char** argv)
     
     
     //this one should be calculate the number of disparities
-    numberOfDisparities = numberOfDisparities > 0 ? numberOfDisparities : ((img_size.width/8) + 15) & -16;
+    //numberOfDisparities = numberOfDisparities > 0 ? numberOfDisparities : ((img_size.width/8) + 15) & -16;
     
     
     //setting the block matching and semi-global bm algorithm parameters
-    bm->setROI1(roi1);
-    bm->setROI2(roi2);
-    bm->setPreFilterCap(63);
-    bm->setBlockSize(SADWindowSize > 0 ? SADWindowSize : 3);
-    bm->setMinDisparity(0);
-    bm->setNumDisparities(numberOfDisparities);
-    bm->setTextureThreshold(10);
-    bm->setUniquenessRatio(15);
-    bm->setSpeckleWindowSize(100);
-    bm->setSpeckleRange(32);
-    bm->setDisp12MaxDiff(1);
-    
-    sgbm->setPreFilterCap(63);
-    int sgbmWinSize = SADWindowSize > 0 ? SADWindowSize : 3;
-    sgbm->setBlockSize(sgbmWinSize);
-    
-    int cn = img1.channels();
-    
-    sgbm->setP1(8*cn*sgbmWinSize*sgbmWinSize);
-    sgbm->setP2(32*cn*sgbmWinSize*sgbmWinSize);
-    sgbm->setMinDisparity(0);
-    sgbm->setNumDisparities(numberOfDisparities);
-    sgbm->setUniquenessRatio(10);
-    sgbm->setSpeckleWindowSize(100);
-    sgbm->setSpeckleRange(32);
-    sgbm->setDisp12MaxDiff(1);
-    if(alg==STEREO_HH)
-        sgbm->setMode(StereoSGBM::MODE_HH);
-    else if(alg==STEREO_SGBM)
-        sgbm->setMode(StereoSGBM::MODE_SGBM);
     
     
-    Mat disp, disp8;
-    //Mat img1p, img2p, dispp;
-    //copyMakeBorder(img1, img1p, 0, 0, numberOfDisparities, 0, IPL_BORDER_REPLICATE);
-    //copyMakeBorder(img2, img2p, 0, 0, numberOfDisparities, 0, IPL_BORDER_REPLICATE);
+    int i1;
+    int i2;
+    int i3;
+    
+    int i5;
+    int i6;
+    int i7;
+    int i8;
+    int i9;
     
     
     
-    //function below calculates the disparity map from 2 images and assigned parameters. Actually there are 4 algorithms. When choosing SGBM, inside the function it will direct to HH or SGBM3WAY
-    //&& means "and", || means "or"
-    //gettickcount calculate the processing time
-    int64 t = getTickCount();
-    if( alg == STEREO_BM )
-        bm->compute(img1, img2, disp);
-    else if( alg == STEREO_SGBM || alg == STEREO_HH || alg == STEREO_3WAY )
-        sgbm->compute(img1, img2, disp);
-    t = getTickCount() - t;
-    printf("Time elapsed: %fms\n", t*1000/getTickFrequency());
-    
-    
-    
-    
-    
-    //disp = dispp.colRange(numberOfDisparities, img1p.cols);
-    
-    //following code first assign a greyscale value to different disparity level
-    //then show the disparity map as well as the input pictures
-    
-    //Flush stream
-    //If the given stream was open for writing (or if it was open for updating and the last i/o operation was an output operation) any unwritten data in its output buffer is written to the file.
-    
-    if( alg != STEREO_VAR )
-        disp.convertTo(disp8, CV_8U, 255/(numberOfDisparities*16.));
-    else
-        disp.convertTo(disp8, CV_8U);
-    if( !no_display )
+    while(1)
     {
-        namedWindow("left", 1);
-        imshow("left", img1);
-        namedWindow("right", 1);
-        imshow("right", img2);
-        namedWindow("disparity", 0);
-        imshow("disparity", disp8);
-        printf("press any key to continue...");
-        fflush(stdout);
-        waitKey();
-        printf("\n");
+        i1 = BlockSize;
+        if(i1%2==0 && i1>=7)
+        {
+            temp11 = i1-1;
+            bm->setBlockSize(temp11);
+            sgbm->setBlockSize(temp11);
+            
+        }
+        if(i1%2!=0 && i1>=7)
+        {
+            temp11 = i1;
+            bm->setBlockSize(temp11);
+            sgbm->setBlockSize(temp11);
+        }
+        
+        
+        
+        i2 = number_of_disparities;
+        if(i2%16!=0 && i2>16)
+        {
+            temp2 = i2 - i2%16;
+            bm->setNumDisparities(temp2);
+            sgbm->setNumDisparities(temp2);
+        }
+        if(i2%16==0 && i2>16)
+        {
+            temp2 =	i2;
+            bm->setNumDisparities(temp2);
+            sgbm->setNumDisparities(temp2);
+        }
+        if(i2<=16)
+        {
+            temp2 =	16;
+            bm->setNumDisparities(temp2);
+            sgbm->setNumDisparities(temp2);
+            
+        }
+        
+        
+        i3 = pre_filter_cap;
+        if(i3%2==0 && i3>=7)
+        {
+            temp3 = i3-1;
+            bm->setPreFilterCap(temp3);
+            sgbm->setPreFilterCap(temp3);
+        }
+        if(i3<7)
+        {
+            temp3 =	7;
+            bm->setPreFilterCap(temp3);
+            sgbm->setPreFilterCap(temp3);
+            
+        }
+        if(i3%2!=0 && i3>=7)
+        {
+            temp3 =	i3;
+            bm->setPreFilterCap(temp3);
+            sgbm->setPreFilterCap(temp3);
+        }
+        
+        
+        i5 = min_disparity;
+        temp5 = -i5;
+        bm->setMinDisparity(temp5);
+        sgbm->setMinDisparity(temp5);
+        
+        i6 = texture_threshold;
+        temp6 = i6;
+        bm->setTextureThreshold(temp6);
+        
+        
+        i7 = uniqueness_ratio;
+        temp7 = i7;
+        bm->setUniquenessRatio(temp7);
+        sgbm->setUniquenessRatio(temp7);
+        
+        
+        i8 = max_diff;
+        temp8 = 0.01*((float)i8);
+        bm->setDisp12MaxDiff(temp8);
+        sgbm->setDisp12MaxDiff(temp8);
+        
+        i9 = speckle_window_size;
+        temp9 = i9;
+        bm->setSpeckleWindowSize(temp9);
+        sgbm->setSpeckleWindowSize(temp9);
+        
+        bm->setROI1(roi1);
+        bm->setROI2(roi2);
+        //bm->setPreFilterCap(63);
+        //bm->setBlockSize(SADWindowSize > 0 ? SADWindowSize : 3);
+        //bm->setMinDisparity(0);
+        //bm->setNumDisparities(numberOfDisparities);
+        //bm->setTextureThreshold(10);
+        //bm->setUniquenessRatio(15);
+        //bm->setSpeckleWindowSize(100);
+        bm->setSpeckleRange(32);
+        //bm->setDisp12MaxDiff(1);
+        
+        //sgbm->setPreFilterCap(63);
+        //int sgbmWinSize = SADWindowSize > 0 ? SADWindowSize : 3;
+        //sgbm->setBlockSize(sgbmWinSize);
+        
+        int cn = img1.channels();
+        
+        //sgbm->setP1(8*cn*sgbmWinSize*sgbmWinSize);
+        //sgbm->setP2(32*cn*sgbmWinSize*sgbmWinSize);
+        //sgbm->setMinDisparity(0);
+        //sgbm->setNumDisparities(numberOfDisparities);
+        //sgbm->setUniquenessRatio(10);
+        //sgbm->setSpeckleWindowSize(100);
+        //sgbm->setSpeckleRange(32);
+        //sgbm->setDisp12MaxDiff(1);
+        if(alg==STEREO_HH)
+            sgbm->setMode(StereoSGBM::MODE_HH);
+        else if(alg==STEREO_SGBM)
+            sgbm->setMode(StereoSGBM::MODE_SGBM);
+        
+        
+        Mat disp, disp8;
+        //Mat img1p, img2p, dispp;
+        //copyMakeBorder(img1, img1p, 0, 0, numberOfDisparities, 0, IPL_BORDER_REPLICATE);
+        //copyMakeBorder(img2, img2p, 0, 0, numberOfDisparities, 0, IPL_BORDER_REPLICATE);
+        
+        
+        
+        //function below calculates the disparity map from 2 images and assigned parameters. Actually there are 4 algorithms. When choosing SGBM, inside the function it will direct to HH or SGBM3WAY
+        //&& means "and", || means "or"
+        //gettickcount calculate the processing time
+        int64 t = getTickCount();
+        if( alg == STEREO_BM ){
+            
+            bm->compute(img1, img2, disp);
+        }
+        else if( alg == STEREO_SGBM || alg == STEREO_HH || alg == STEREO_3WAY )
+            sgbm->compute(img1, img2, disp);
+        t = getTickCount() - t;
+        printf("Time elapsed: %fms\n", t*1000/getTickFrequency());
+        
+        
+        
+        
+        
+        //disp = dispp.colRange(numberOfDisparities, img1p.cols);
+        
+        //following code first assign a greyscale value to different disparity level
+        //then show the disparity map as well as the input pictures
+        
+        //Flush stream
+        //If the given stream was open for writing (or if it was open for updating and the last i/o operation was an output operation) any unwritten data in its output buffer is written to the file.
+        
+        if( alg != STEREO_VAR )
+            disp.convertTo(disp8, CV_8U, 255/(number_of_disparities*16.));
+        else
+            disp.convertTo(disp8, CV_8U);
+        if( !no_display )
+        {
+            namedWindow("left", 1);
+            imshow("left", img1);
+            namedWindow("right", 1);
+            imshow("right", img2);
+            namedWindow("disparity", 0);
+            imshow("disparity", disp8);
+            printf("press any key to continue...");
+            fflush(stdout);
+            waitKey();
+            printf("\n");
+        }
+        
+        //write the disparity matrix into a file
+        if(disparity_filename)
+            imwrite(disparity_filename, disp8);
+        
+        if(point_cloud_filename)
+        {
+            printf("storing the point cloud...");
+            fflush(stdout);
+            Mat xyz;
+            reprojectImageTo3D(disp, xyz, Q, true);
+            saveXYZ(point_cloud_filename, xyz);
+            printf("\n");
+        }
     }
-    
-    //write the disparity matrix into a file
-    if(disparity_filename)
-        imwrite(disparity_filename, disp8);
-    
-    if(point_cloud_filename)
-    {
-        printf("storing the point cloud...");
-        fflush(stdout);
-        Mat xyz;
-        reprojectImageTo3D(disp, xyz, Q, true);
-        saveXYZ(point_cloud_filename, xyz);
-        printf("\n");
-    }
-    
     return 0;
 }
