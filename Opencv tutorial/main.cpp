@@ -100,6 +100,9 @@ int main(int argc, char** argv)
     int temp9;
     
     
+    
+    
+    
     //tracking bar parameters
     int erosion_size = 0;
     int dilation_size = 0;
