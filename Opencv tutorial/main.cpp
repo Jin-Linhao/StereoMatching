@@ -13,6 +13,7 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/core/utility.hpp"
 
+
 #include <stdio.h>
 
 using namespace cv;
@@ -29,6 +30,13 @@ static void print_help()
            "[--no-display] [-o <disparity_image>] [-p <point_cloud_file>]\n");
     printf("\nUserguide: In terminal, cd to /Users/LH_Mac/Desktop/BMW_FMRL_Image_Depth/OpenCV TR/Opencv tutorial/build/Debug, type ./Opencv\ tutorial LEFT_IMAGE_PATH RIGHT_IMAGE_PATH --algorithm=sgbm");
 }
+
+
+
+
+
+
+
 
 
 
@@ -53,25 +61,6 @@ static void saveXYZ(const char* filename, const Mat& mat)
 
 
 
-int BlockSize = 5;
-int temp11;
-int number_of_disparities = 80;
-int temp2;
-int pre_filter_size = 5;
-int temp3;
-int pre_filter_cap = 23;
-int temp4;
-int min_disparity = 1;
-int temp5;
-int texture_threshold = 500;
-int temp6;
-int uniqueness_ratio = 0;
-int temp7;
-int max_diff = 100;
-float temp8;
-int speckle_window_size = -10;
-int temp9;
-
 
 
 
@@ -90,15 +79,37 @@ int temp9;
 int main(int argc, char** argv)
 {
     
+    //disparity map
+    int BlockSize = 5;
+    int temp11;
+    int number_of_disparities = 80;
+    int temp2;
+    int pre_filter_size = 5;
+    int temp3;
+    int pre_filter_cap = 23;
+    int temp4;
+    int min_disparity = 1;
+    int temp5;
+    int texture_threshold = 500;
+    int temp6;
+    int uniqueness_ratio = 0;
+    int temp7;
+    int max_diff = 100;
+    float temp8;
+    int speckle_window_size = -10;
+    int temp9;
     
     
+    //tracking bar parameters
+    int erosion_size = 0;
+    int dilation_size = 0;
     
     
     
     //these are the options, they don't have to be in the command window
     const char* algorithm_opt = "--algorithm=";
-    const char* maxdisp_opt = "--max-disparity=";
-    const char* blocksize_opt = "--blocksize=";
+    //const char* maxdisp_opt = "--max-disparity=";
+    //const char* blocksize_opt = "--blocksize=";
     const char* nodisplay_opt = "--no-display";
     const char* scale_opt = "--scale=";
     
@@ -247,16 +258,7 @@ int main(int argc, char** argv)
     int color_mode = alg == STEREO_BM ? 0 : -1;
     Mat img1 = imread(img1_filename, color_mode);
     Mat img2 = imread(img2_filename, color_mode);
-    namedWindow("disp", 20);
-    createTrackbar("WindowSize", "disp", & BlockSize, 50, NULL);
-    createTrackbar("no_of_disparities", "disp", &number_of_disparities,255, NULL);
-    createTrackbar("filter_size", "disp", &pre_filter_size,255, NULL);
-    createTrackbar("filter_cap", "disp", &pre_filter_cap,63, NULL);
-    createTrackbar("min_disparity", "disp", &min_disparity,60, NULL);
-    createTrackbar("texture_thresh", "disp", &texture_threshold,2000, NULL);
-    createTrackbar("uniquness", "disp", &uniqueness_ratio,30, NULL);
-    createTrackbar("disp12MaxDiff", "disp", &max_diff,100, NULL);
-    createTrackbar("Speckle Window", "disp", &speckle_window_size,50, NULL);
+    
     
     
     
@@ -341,20 +343,34 @@ int main(int argc, char** argv)
     //setting the block matching and semi-global bm algorithm parameters
     
     
-    int i1;
-    int i2;
-    int i3;
     
-    int i5;
-    int i6;
-    int i7;
-    int i8;
-    int i9;
+    namedWindow("disp", 20);
+    //create disp parameters tracking bar
+    createTrackbar("WindowSize", "disp", & BlockSize, 50, NULL);
+    createTrackbar("no_of_disparities", "disp", &number_of_disparities,255, NULL);
+    createTrackbar("filter_size", "disp", &pre_filter_size,255, NULL);
+    createTrackbar("filter_cap", "disp", &pre_filter_cap,63, NULL);
+    createTrackbar("min_disparity", "disp", &min_disparity,60, NULL);
+    createTrackbar("texture_thresh", "disp", &texture_threshold,2000, NULL);
+    createTrackbar("uniquness", "disp", &uniqueness_ratio,30, NULL);
+    createTrackbar("disp12MaxDiff", "disp", &max_diff,100, NULL);
+    createTrackbar("Speckle Window", "disp", &speckle_window_size,50, NULL);
+    
+    
+    
+    /// Create Erosion Trackbar
+    createTrackbar( "Erode Kernel size", "disp", &erosion_size, 25, NULL);
+    
+    /// Create Dilation Trackbar
+    createTrackbar( "Dilate Kernel size", "disp", &dilation_size, 25, NULL);
+    
+    
     
     
     
     while(1)
     {
+        int i1;
         i1 = BlockSize;
         if(i1%2==0 && i1>=7)
         {
@@ -371,7 +387,7 @@ int main(int argc, char** argv)
         }
         
         
-        
+        int i2;
         i2 = number_of_disparities;
         if(i2%16!=0 && i2>16)
         {
@@ -393,7 +409,7 @@ int main(int argc, char** argv)
             
         }
         
-        
+        int i3;
         i3 = pre_filter_cap;
         if(i3%2==0 && i3>=7)
         {
@@ -416,27 +432,30 @@ int main(int argc, char** argv)
         }
         
         
+        int i5;
         i5 = min_disparity;
         temp5 = -i5;
         bm->setMinDisparity(temp5);
         sgbm->setMinDisparity(temp5);
         
+        int i6;
         i6 = texture_threshold;
         temp6 = i6;
         bm->setTextureThreshold(temp6);
         
-        
+        int i7;
         i7 = uniqueness_ratio;
         temp7 = i7;
         bm->setUniquenessRatio(temp7);
         sgbm->setUniquenessRatio(temp7);
         
-        
+        int i8;
         i8 = max_diff;
         temp8 = 0.01*((float)i8);
         bm->setDisp12MaxDiff(temp8);
         sgbm->setDisp12MaxDiff(temp8);
         
+        int i9;
         i9 = speckle_window_size;
         temp9 = i9;
         bm->setSpeckleWindowSize(temp9);
@@ -474,7 +493,7 @@ int main(int argc, char** argv)
             sgbm->setMode(StereoSGBM::MODE_SGBM);
         
         
-        Mat disp, disp8;
+        Mat disp, disp8, disp9, disp10;
         //Mat img1p, img2p, dispp;
         //copyMakeBorder(img1, img1p, 0, 0, numberOfDisparities, 0, IPL_BORDER_REPLICATE);
         //copyMakeBorder(img2, img2p, 0, 0, numberOfDisparities, 0, IPL_BORDER_REPLICATE);
@@ -498,6 +517,7 @@ int main(int argc, char** argv)
         
         
         
+        
         //disp = dispp.colRange(numberOfDisparities, img1p.cols);
         
         //following code first assign a greyscale value to different disparity level
@@ -510,6 +530,30 @@ int main(int argc, char** argv)
             disp.convertTo(disp8, CV_8U, 255/(number_of_disparities*16.));
         else
             disp.convertTo(disp8, CV_8U);
+        
+        
+        
+        Mat element2 = getStructuringElement( MORPH_ELLIPSE,
+                                             Size( 2*erosion_size + 1, 2*erosion_size+1 ),
+                                             Point( erosion_size, erosion_size ) );
+        
+        // Apply the erosion operation
+        erode( disp8, disp9, element2 );
+        
+        
+        
+        //dilation and erodation
+        Mat element1 = getStructuringElement( MORPH_ELLIPSE,
+                                             Size( 2*dilation_size + 1, 2*dilation_size+1 ),
+                                             Point( dilation_size, dilation_size ) );
+        /// Apply the dilation operation
+        dilate( disp9, disp10, element1 );
+        
+        
+        
+        
+        
+        
         if( !no_display )
         {
             namedWindow("left", 1);
@@ -517,7 +561,7 @@ int main(int argc, char** argv)
             namedWindow("right", 1);
             imshow("right", img2);
             namedWindow("disparity", 0);
-            imshow("disparity", disp8);
+            imshow("disparity", disp10);
             printf("press any key to continue...");
             fflush(stdout);
             waitKey();
@@ -538,5 +582,13 @@ int main(int argc, char** argv)
             printf("\n");
         }
     }
+    
+    
     return 0;
 }
+
+
+
+
+
+
