@@ -33,7 +33,6 @@ static void print_help()
 
 
 
-// save image from command line   as an matrix. fabs means compute absolute value
 static void saveXYZ(const char* filename, const Mat& mat)
 {
     const double max_z = 1.0e4;
@@ -54,32 +53,7 @@ static void saveXYZ(const char* filename, const Mat& mat)
 
 int main(int argc, char** argv)
 {
-    
-    //disparity map
-    int BlockSize = 5;
-    int temp11;
-    int number_of_disparities = 80;
-    int temp2;
-    int pre_filter_size = 5;
-    int temp3;
-    int pre_filter_cap = 23;
-    int temp4;
-    int min_disparity = 1;
-    int temp5;
-    int texture_threshold = 500;
-    int temp6;
-    int uniqueness_ratio = 0;
-    int temp7;
-    int max_diff = 100;
-    float temp8;
-    int speckle_window_size = -10;
-    int temp9;
-    
-    //tracking bar parameters
-    int erosion_size = 0;
-    int dilation_size = 0;
-    
-    
+
     
 
     const char* algorithm_opt = "--algorithm=";
@@ -88,7 +62,7 @@ int main(int argc, char** argv)
     const char* nodisplay_opt = "--no-display";
     const char* scale_opt = "--scale=";
     
-    //if the input is less than 3 items (executable name, left image, right image),print_help. This will usually happen when directly click the executable
+    //if the input is less than 3 items (executable name, left image, right image),print_help. This will happen when directly click the executable
     if(argc < 3)
     {
         print_help();
@@ -101,10 +75,8 @@ int main(int argc, char** argv)
     const char* disparity_filename = 0;
     const char* point_cloud_filename = 0;
     
-    //I think this one is to assign the values to different algorithms and set default algorithm as SGBM
     enum { STEREO_BM=0, STEREO_SGBM=1, STEREO_HH=2, STEREO_VAR=3, STEREO_3WAY=4 };
     int alg = STEREO_SGBM;
-    //int SADWindowSize = 0, numberOfDisparities = 0;
     bool no_display = false;
     float scale = 1.f;
 
@@ -139,9 +111,6 @@ int main(int argc, char** argv)
                 return -1;
             }
         }
-        
-        
-        
 
         else if( strncmp(argv[i], scale_opt, strlen(scale_opt)) == 0 )
         {
@@ -152,7 +121,6 @@ int main(int argc, char** argv)
             }
         }
         
-        //for other options
         else if( strcmp(argv[i], nodisplay_opt) == 0 )
             no_display = true;
         else if( strcmp(argv[i], "-i" ) == 0 )
@@ -171,13 +139,13 @@ int main(int argc, char** argv)
     }
     
     
-    //test input options (if we miss a input)
+    
+    
     if( !img1_filename || !img2_filename )
     {
         printf("Command-line parameter error: both left and right images must be specified\n");
         return -1;
     }
-    
     
     if( (intrinsic_filename != 0) ^ (extrinsic_filename != 0) )
     {
@@ -196,9 +164,6 @@ int main(int argc, char** argv)
     Mat img2 = imread(img2_filename, color_mode);
     
     
-    
-    
-    //test the whether the string is empty
     if (img1.empty())
     {
         printf("Command-line parameter error: could not load the first input image file\n");
@@ -209,7 +174,6 @@ int main(int argc, char** argv)
         printf("Command-line parameter error: could not load the second input image file\n");
         return -1;
     }
-    
     
     //input scale factor
     if (scale != 1.f)
@@ -271,128 +235,134 @@ int main(int argc, char** argv)
         img2 = img2r;
     }
     
+    //disparity map parameters
+    int BlockSize = 5;
+    int number_of_disparities = 80;
+    int pre_filter_size = 5;
+    int pre_filter_cap = 23;
+    int min_disparity = 1;
+    int texture_threshold = 500;
+    int uniqueness_ratio = 0;
+    int max_diff = 100;
+    int speckle_window_size = -10;
     
+    //tracking bar parameters
+    int erosion_size = 0;
+    int dilation_size = 0;
     
-    namedWindow("disp", 20);
-    //create disp parameters tracking bar
-    createTrackbar("WindowSize", "disp", & BlockSize, 50, NULL);
-    createTrackbar("no_of_disparities", "disp", &number_of_disparities,255, NULL);
-    createTrackbar("filter_size", "disp", &pre_filter_size,255, NULL);
-    createTrackbar("filter_cap", "disp", &pre_filter_cap,63, NULL);
-    createTrackbar("min_disparity", "disp", &min_disparity,60, NULL);
-    createTrackbar("texture_thresh", "disp", &texture_threshold,2000, NULL);
-    createTrackbar("uniquness", "disp", &uniqueness_ratio,30, NULL);
-    createTrackbar("disp12MaxDiff", "disp", &max_diff,100, NULL);
-    createTrackbar("Speckle Window", "disp", &speckle_window_size,50, NULL);
-    
-    
+    namedWindow("disparity map", 50);
+    //create disparitymap tracking bar
+    createTrackbar("WindowSize", "disparity map", & BlockSize, 50, NULL);
+    createTrackbar("no_of_disparities", "disparity map", &number_of_disparities,255, NULL);
+    createTrackbar("filter_size", "disparity map", &pre_filter_size,255, NULL);
+    createTrackbar("filter_cap", "disparity map", &pre_filter_cap,63, NULL);
+    createTrackbar("min_disparity", "disparity map", &min_disparity,60, NULL);
+    createTrackbar("texture_thresh", "disparity map", &texture_threshold,2000, NULL);
+    createTrackbar("uniquness", "disparity map", &uniqueness_ratio,30, NULL);
+    createTrackbar("disp12MaxDiff", "disparity map", &max_diff,100, NULL);
+    createTrackbar("Speckle Window", "disparity map", &speckle_window_size,50, NULL);
     
     /// Create Erosion Trackbar
-    createTrackbar( "Erode Kernel size", "disp", &erosion_size, 25, NULL);
+    createTrackbar( "Erode Kernel size", "disparity map", &erosion_size, 25, NULL);
     
     /// Create Dilation Trackbar
-    createTrackbar( "Dilate Kernel size", "disp", &dilation_size, 25, NULL);
-    
-    
-    
+    createTrackbar( "Dilate Kernel size", "disparity map", &dilation_size, 25, NULL);
     
     
     while(1)
     {
-        int i1;
+        int i1, p1;
         i1 = BlockSize;
         if(i1%2==0 && i1>=7)
         {
-            temp11 = i1-1;
-            bm->setBlockSize(temp11);
-            sgbm->setBlockSize(temp11);
-            
+            p1 = i1-1;
+            bm->setBlockSize(p1);
+            sgbm->setBlockSize(p1);
         }
+        
         if(i1%2!=0 && i1>=7)
         {
-            temp11 = i1;
-            bm->setBlockSize(temp11);
-            sgbm->setBlockSize(temp11);
+            p1 = i1;
+            bm->setBlockSize(p1);
+            sgbm->setBlockSize(p1);
         }
         
-        
-        int i2;
+        int i2, p2;
         i2 = number_of_disparities;
         if(i2%16!=0 && i2>16)
         {
-            temp2 = i2 - i2%16;
-            bm->setNumDisparities(temp2);
-            sgbm->setNumDisparities(temp2);
+            p2 = i2 - i2%16;
+            bm->setNumDisparities(p2);
+            sgbm->setNumDisparities(p2);
         }
         if(i2%16==0 && i2>16)
         {
-            temp2 =	i2;
-            bm->setNumDisparities(temp2);
-            sgbm->setNumDisparities(temp2);
+            p2 = i2;
+            bm->setNumDisparities(p2);
+            sgbm->setNumDisparities(p2);
         }
         if(i2<=16)
         {
-            temp2 =	16;
-            bm->setNumDisparities(temp2);
-            sgbm->setNumDisparities(temp2);
-            
+            p2 = 16;
+            bm->setNumDisparities(p2);
+            sgbm->setNumDisparities(p2);
         }
         
-        int i3;
+        int i3, p3;
         i3 = pre_filter_cap;
         if(i3%2==0 && i3>=7)
         {
-            temp3 = i3-1;
-            bm->setPreFilterCap(temp3);
-            sgbm->setPreFilterCap(temp3);
+            p3 = i3-1;
+            bm->setPreFilterCap(p3);
+            sgbm->setPreFilterCap(p3);
         }
         if(i3<7)
         {
-            temp3 =	7;
-            bm->setPreFilterCap(temp3);
-            sgbm->setPreFilterCap(temp3);
+            p3 = 7;
+            bm->setPreFilterCap(p3);
+            sgbm->setPreFilterCap(p3);
             
         }
         if(i3%2!=0 && i3>=7)
         {
-            temp3 =	i3;
-            bm->setPreFilterCap(temp3);
-            sgbm->setPreFilterCap(temp3);
+            p3 =	i3;
+            bm->setPreFilterCap(p3);
+            sgbm->setPreFilterCap(p3);
         }
         
+        int i4, p4;
+        i4 = speckle_window_size;
+        p4 = i4;
+        bm->setSpeckleWindowSize(i4);
+        sgbm->setSpeckleWindowSize(i4);
         
-        int i5;
+        int i5, p5;
         i5 = min_disparity;
-        temp5 = -i5;
-        bm->setMinDisparity(temp5);
-        sgbm->setMinDisparity(temp5);
+        p5 = -i5;
+        bm->setMinDisparity(p5);
+        sgbm->setMinDisparity(p5);
         
-        int i6;
+        int i6, p6;
         i6 = texture_threshold;
-        temp6 = i6;
-        bm->setTextureThreshold(temp6);
+        p6 = i6;
+        bm->setTextureThreshold(p6);
         
-        int i7;
+        int i7, p7;
         i7 = uniqueness_ratio;
-        temp7 = i7;
-        bm->setUniquenessRatio(temp7);
-        sgbm->setUniquenessRatio(temp7);
+        p7 = i7;
+        bm->setUniquenessRatio(p7);
+        sgbm->setUniquenessRatio(p7);
         
         int i8;
+        float p8;
         i8 = max_diff;
-        temp8 = 0.01*((float)i8);
-        bm->setDisp12MaxDiff(temp8);
-        sgbm->setDisp12MaxDiff(temp8);
-        
-        int i9;
-        i9 = speckle_window_size;
-        temp9 = i9;
-        bm->setSpeckleWindowSize(temp9);
-        sgbm->setSpeckleWindowSize(temp9);
+        p8 = 0.01*((float)i8);
+        bm->setDisp12MaxDiff(p8);
+        sgbm->setDisp12MaxDiff(p8);
+
         
         bm->setROI1(roi1);
         bm->setROI2(roi2);
-
         bm->setSpeckleRange(32);
 
         int cn = img1.channels();
@@ -406,43 +376,37 @@ int main(int argc, char** argv)
         
         
         
-        Mat disp, disp8, disp9, disp10;
+        Mat dispcal, disp8U, disp8Uerode, disp8Udilate;
 
         int64 t = getTickCount();
         if( alg == STEREO_BM ){
             
-            bm->compute(img1, img2, disp);
+            bm->compute(img1, img2, dispcal);
         }
         else if( alg == STEREO_SGBM || alg == STEREO_HH || alg == STEREO_3WAY )
-            sgbm->compute(img1, img2, disp);
+            sgbm->compute(img1, img2, dispcal);
         t = getTickCount() - t;
         printf("Time elapsed: %fms\n", t*1000/getTickFrequency());
         
-     
-        
         
         if( alg != STEREO_VAR )
-            disp.convertTo(disp8, CV_8U, 255/(number_of_disparities*16.));
+            dispcal.convertTo(disp8U, CV_8U, 255/(number_of_disparities*16.));
         else
-            disp.convertTo(disp8, CV_8U);
+            dispcal.convertTo(disp8U, CV_8U);
         
         
-        
-        Mat element2 = getStructuringElement( MORPH_ELLIPSE,
+        Mat element1 = getStructuringElement( MORPH_ELLIPSE,
                                              Size( 2*erosion_size + 1, 2*erosion_size+1 ),
                                              Point( erosion_size, erosion_size ) );
         
         // Apply the erosion operation
-        erode( disp8, disp9, element2 );
-        
-        
-        
+        erode( disp8U, disp8Uerode, element1 );
         //dilation and erodation
-        Mat element1 = getStructuringElement( MORPH_ELLIPSE,
+        Mat element2 = getStructuringElement( MORPH_ELLIPSE,
                                              Size( 2*dilation_size + 1, 2*dilation_size+1 ),
                                              Point( dilation_size, dilation_size ) );
         /// Apply the dilation operation
-        dilate( disp9, disp10, element1 );
+        dilate( disp8Uerode, disp8Udilate, element2 );
         
         
         
@@ -456,7 +420,7 @@ int main(int argc, char** argv)
             namedWindow("right", 1);
             imshow("right", img2);
             namedWindow("disparity", 0);
-            imshow("disparity", disp10);
+            imshow("disparity", disp8Udilate);
             printf("press any key to continue...");
             fflush(stdout);
             waitKey();
@@ -465,14 +429,14 @@ int main(int argc, char** argv)
         
         //write the disparity matrix into a file
         if(disparity_filename)
-            imwrite(disparity_filename, disp8);
+            imwrite(disparity_filename, disp8Udilate);
         
         if(point_cloud_filename)
         {
             printf("storing the point cloud...");
             fflush(stdout);
             Mat xyz;
-            reprojectImageTo3D(disp, xyz, Q, true);
+            reprojectImageTo3D(dispcal, xyz, Q, true);
             saveXYZ(point_cloud_filename, xyz);
             printf("\n");
         }
