@@ -365,7 +365,7 @@ int main(int argc, char** argv)
         bm->setROI2(roi2);
         bm->setSpeckleRange(32);
 
-        int cn = img1.channels();
+        //int cn = img1.channels();
         
 
         if(alg==STEREO_HH)
