@@ -378,8 +378,8 @@ int main(int argc, char** argv)
     
     if( imagelistfn == "" )
     {
-        imagelistfn = "/Users/LH_Mac/Desktop/BMW_FM/BMW_FM/VID5.xml";
-        boardSize = Size(8, 6);
+        imagelistfn = "/Users/LH_Mac/Desktop/BMW_FM/BMW_FM/VID10.xml";
+        boardSize = Size(9, 6);
     }
     else if( boardSize.width <= 0 || boardSize.height <= 0 )
     {
@@ -398,3 +398,14 @@ int main(int argc, char** argv)
     StereoCalib(imagelist, boardSize,false, true, showRectified);
     return 0;
 }
+
+
+
+
+//call the function stereorectify
+//get 2 matrices R1 and R2
+//init_rectifymap
+//
+//pass the map to remap, put in original image, get the outpput image
+//find the disparity with both images
+//

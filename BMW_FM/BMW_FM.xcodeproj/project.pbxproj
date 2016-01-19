@@ -8,12 +8,22 @@
 
 /* Begin PBXBuildFile section */
 		950657651C09CB710043ABD2 /* Cam_Capture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9506575A1C09C9470043ABD2 /* Cam_Capture.cpp */; };
+		95297B601C43B87A00BF80BF /* Cam_Calib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 95297B551C43AE0600BF80BF /* Cam_Calib.cpp */; };
 		9544D40D1C01BFC6007D426D /* Disp_Map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9544D40C1C01BFC6007D426D /* Disp_Map.cpp */; };
 		9544D41E1C01C1E6007D426D /* Stereo_Calib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9544D4131C01C153007D426D /* Stereo_Calib.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		950657601C09CB5B0043ABD2 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		95297B5B1C43B83D00BF80BF /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -45,14 +55,23 @@
 /* Begin PBXFileReference section */
 		9506575A1C09C9470043ABD2 /* Cam_Capture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Cam_Capture.cpp; sourceTree = "<group>"; };
 		950657641C09CB5B0043ABD2 /* Cam_Cap */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Cam_Cap; sourceTree = BUILT_PRODUCTS_DIR; };
+		95297B551C43AE0600BF80BF /* Cam_Calib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Cam_Calib.cpp; sourceTree = "<group>"; };
+		95297B5F1C43B83D00BF80BF /* Cam_Calib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Cam_Calib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9544D4091C01BFC6007D426D /* Disp_Map */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Disp_Map; sourceTree = BUILT_PRODUCTS_DIR; };
 		9544D40C1C01BFC6007D426D /* Disp_Map.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Disp_Map.cpp; sourceTree = "<group>"; };
 		9544D4131C01C153007D426D /* Stereo_Calib.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Stereo_Calib.cpp; sourceTree = "<group>"; };
-		9544D41D1C01C1BF007D426D /* Cam_Calib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Cam_Calib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9544D41D1C01C1BF007D426D /* Stereo_Calib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Stereo_Calib; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		9506575F1C09CB5B0043ABD2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		95297B5A1C43B83D00BF80BF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -88,8 +107,9 @@
 			isa = PBXGroup;
 			children = (
 				9544D4091C01BFC6007D426D /* Disp_Map */,
-				9544D41D1C01C1BF007D426D /* Cam_Calib */,
+				9544D41D1C01C1BF007D426D /* Stereo_Calib */,
 				950657641C09CB5B0043ABD2 /* Cam_Cap */,
+				95297B5F1C43B83D00BF80BF /* Cam_Calib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -100,6 +120,7 @@
 				9544D40C1C01BFC6007D426D /* Disp_Map.cpp */,
 				9544D4131C01C153007D426D /* Stereo_Calib.cpp */,
 				9506575A1C09C9470043ABD2 /* Cam_Capture.cpp */,
+				95297B551C43AE0600BF80BF /* Cam_Calib.cpp */,
 			);
 			path = BMW_FM;
 			sourceTree = "<group>";
@@ -124,6 +145,23 @@
 			productReference = 950657641C09CB5B0043ABD2 /* Cam_Cap */;
 			productType = "com.apple.product-type.tool";
 		};
+		95297B571C43B83D00BF80BF /* Cam_Calib */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 95297B5C1C43B83D00BF80BF /* Build configuration list for PBXNativeTarget "Cam_Calib" */;
+			buildPhases = (
+				95297B581C43B83D00BF80BF /* Sources */,
+				95297B5A1C43B83D00BF80BF /* Frameworks */,
+				95297B5B1C43B83D00BF80BF /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Cam_Calib;
+			productName = BMW_FM;
+			productReference = 95297B5F1C43B83D00BF80BF /* Cam_Calib */;
+			productType = "com.apple.product-type.tool";
+		};
 		9544D4081C01BFC6007D426D /* Disp_Map */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9544D4101C01BFC6007D426D /* Build configuration list for PBXNativeTarget "Disp_Map" */;
@@ -141,9 +179,9 @@
 			productReference = 9544D4091C01BFC6007D426D /* Disp_Map */;
 			productType = "com.apple.product-type.tool";
 		};
-		9544D4151C01C1BF007D426D /* Cam_Calib */ = {
+		9544D4151C01C1BF007D426D /* Stereo_Calib */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9544D41A1C01C1BF007D426D /* Build configuration list for PBXNativeTarget "Cam_Calib" */;
+			buildConfigurationList = 9544D41A1C01C1BF007D426D /* Build configuration list for PBXNativeTarget "Stereo_Calib" */;
 			buildPhases = (
 				9544D4161C01C1BF007D426D /* Sources */,
 				9544D4181C01C1BF007D426D /* Frameworks */,
@@ -153,9 +191,9 @@
 			);
 			dependencies = (
 			);
-			name = Cam_Calib;
+			name = Stereo_Calib;
 			productName = BMW_FM;
-			productReference = 9544D41D1C01C1BF007D426D /* Cam_Calib */;
+			productReference = 9544D41D1C01C1BF007D426D /* Stereo_Calib */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -185,8 +223,9 @@
 			projectRoot = "";
 			targets = (
 				9544D4081C01BFC6007D426D /* Disp_Map */,
-				9544D4151C01C1BF007D426D /* Cam_Calib */,
+				9544D4151C01C1BF007D426D /* Stereo_Calib */,
 				9506575C1C09CB5B0043ABD2 /* Cam_Cap */,
+				95297B571C43B83D00BF80BF /* Cam_Calib */,
 			);
 		};
 /* End PBXProject section */
@@ -197,6 +236,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				950657651C09CB710043ABD2 /* Cam_Capture.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		95297B581C43B83D00BF80BF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				95297B601C43B87A00BF80BF /* Cam_Calib.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,6 +295,62 @@
 			name = Debug;
 		};
 		950657631C09CB5B0043ABD2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_LDFLAGS = (
+					"-lopencv_calib3d",
+					"-lopencv_core",
+					"-lopencv_features2d",
+					"-lopencv_flann",
+					"-lopencv_highgui",
+					"-lopencv_imgcodecs",
+					"-lopencv_imgproc",
+					"-lopencv_ml",
+					"-lopencv_objdetect",
+					"-lopencv_photo",
+					"-lopencv_shape",
+					"-lopencv_stitching",
+					"-lopencv_superres",
+					"-lopencv_ts",
+					"-lopencv_video",
+					"-lopencv_videoio",
+					"-lopencv_videostab",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		95297B5D1C43B83D00BF80BF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_LDFLAGS = (
+					"-lopencv_calib3d",
+					"-lopencv_core",
+					"-lopencv_features2d",
+					"-lopencv_flann",
+					"-lopencv_highgui",
+					"-lopencv_imgcodecs",
+					"-lopencv_imgproc",
+					"-lopencv_ml",
+					"-lopencv_objdetect",
+					"-lopencv_photo",
+					"-lopencv_shape",
+					"-lopencv_stitching",
+					"-lopencv_superres",
+					"-lopencv_ts",
+					"-lopencv_video",
+					"-lopencv_videoio",
+					"-lopencv_videostab",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		95297B5E1C43B83D00BF80BF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				HEADER_SEARCH_PATHS = /usr/local/include;
@@ -478,6 +581,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		95297B5C1C43B83D00BF80BF /* Build configuration list for PBXNativeTarget "Cam_Calib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				95297B5D1C43B83D00BF80BF /* Debug */,
+				95297B5E1C43B83D00BF80BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		9544D4041C01BFC6007D426D /* Build configuration list for PBXProject "BMW_FM" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -496,7 +608,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9544D41A1C01C1BF007D426D /* Build configuration list for PBXNativeTarget "Cam_Calib" */ = {
+		9544D41A1C01C1BF007D426D /* Build configuration list for PBXNativeTarget "Stereo_Calib" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9544D41B1C01C1BF007D426D /* Debug */,
