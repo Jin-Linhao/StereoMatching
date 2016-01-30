@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+
 using namespace cv;
 using namespace std;
 
@@ -297,8 +298,11 @@ StereoCalib(const vector<string>& imagelist, Size boardSize,bool displayCorners 
     {
         for( k = 0; k < 2; k++ )
         {
+            
             Mat img = imread(goodImageList[i*2+k], 0), rimg, cimg;
             remap(img, rimg, rmap[k][0], rmap[k][1], INTER_LINEAR);
+//            imwrite("/Users/LH_Mac/Desktop/1.jpg", rimg);
+//            imwrite("/Users/LH_Mac/Desktop/2.jpg", img);
             cvtColor(rimg, cimg, COLOR_GRAY2BGR);
             Mat canvasPart = !isVerticalStereo ? canvas(Rect(w*k, 0, w, h)) : canvas(Rect(0, h*k, w, h));
             resize(cimg, canvasPart, canvasPart.size(), 0, 0, INTER_AREA);
@@ -378,7 +382,7 @@ int main(int argc, char** argv)
     
     if( imagelistfn == "" )
     {
-        imagelistfn = "/Users/LH_Mac/Desktop/BMW_FM/BMW_FM/VID10.xml";
+        imagelistfn = "/Users/LH_Mac/Desktop/BMW_FM/BMW_FM/VID9.xml";
         boardSize = Size(9, 6);
     }
     else if( boardSize.width <= 0 || boardSize.height <= 0 )
